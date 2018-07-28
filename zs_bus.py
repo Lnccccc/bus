@@ -62,3 +62,5 @@ im1 = im1.convert(mode='RGBA')
 im4 = Image.blend(im1,im2,alpha=0.5)
 im5 = Image.blend(im4,im3,alpha=0.5)
 im5.show()
+
+##如何做一个更好的实时公交系统？
