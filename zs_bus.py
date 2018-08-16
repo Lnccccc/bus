@@ -23,7 +23,6 @@ markers3 = ''
 raw_locations = ''
 info = get_bus_info()
 fuyi = str(info['line'][26]['lng'])+','+str(info['line'][26]['lat'])
-print(fuyi)
 for i in range(len(info['line'])):
     location.append('%s,%s|' % (info['line'][i]['lng'],info['line'][i]['lat']))
 for i in range(len(location)):
@@ -32,35 +31,27 @@ locations_api = requests.get("https://restapi.amap.com/v3/assistant/coordinate/c
 json_locations_api = locations_api.json()
 location=json_locations_api['locations'].split(';')
 
+location_dic = {}
 for i in range(10):
     markers +=location[i]+';'
-markers = 'A:'+markers
-print(markers)
+location_dic.update({'market1': 'A:'+markers})
 for i in range(10,20):
     markers3 +=location[i]+';'
-markers3 = 'A:'+markers3
+location_dic.update({'market3':'A:'+markers3})
 for i in range(20,30):
     markers2 +=location[i]+';'
-markers2 = 'A:'+markers2
-
-
-
-map_api = "https://restapi.amap.com/v3/staticmap?location="+fuyi+"&zoom=12&size=1024*1024&markers=mid,,"+markers[:-1]+"&key=40aec8af51d4c65702feba24cf2e7aa7"
-map_api2 = "https://restapi.amap.com/v3/staticmap?location="+fuyi+"&zoom=12&size=1024*1024&markers=mid,,"+markers2[:-1]+"&key=40aec8af51d4c65702feba24cf2e7aa7"
-map_api3 = "https://restapi.amap.com/v3/staticmap?location="+fuyi+"&zoom=12&size=1024*1024&markers=mid,,"+markers3[:-1]+"&key=40aec8af51d4c65702feba24cf2e7aa7"
-
-bus_map = requests.get(url=map_api)
-bus_map2 = requests.get(url=map_api2)
-bus_map3 = requests.get(url=map_api3)
-
-im1 = Image.open(BytesIO(bus_map.content))
-im2 = Image.open(BytesIO(bus_map2.content))
-im3 = Image.open(BytesIO(bus_map3.content))
-im3 = im3.convert(mode='RGBA')
-im2 = im2.convert(mode='RGBA')
-im1 = im1.convert(mode='RGBA')
-im4 = Image.blend(im1,im2,alpha=0.5)
-im5 = Image.blend(im4,im3,alpha=0.5)
+location_dic.update({'market2' : 'A:'+markers2})
+print(location_dic[list(location_dic.keys())[0]])
+location_list = []
+for i in range(len(location_dic.keys())):
+    map_api = "https://restapi.amap.com/v3/staticmap?location="+fuyi+"&zoom=12&size=1024*1024&markers=mid,,"+location_dic[list(location_dic.keys())[i]][:-1]+"&key=40aec8af51d4c65702feba24cf2e7aa7"
+    bus_map = requests.get(url=map_api)
+    im1 = Image.open(BytesIO(bus_map.content))
+    im1 = im1.convert(mode='RGBA')
+    location_list.append(im1)
+im4 = Image.blend(location_list[0],location_list[1],alpha=0.5)
+im5 = Image.blend(location_list[2],im4,alpha=0.5)
 im5.show()
+
 
 ##如何做一个更好的实时公交系统？
